@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Placemark id="3">
+            <name/>
+            <Point id="2">
+                <coordinates>115.887162,-31.805231,22.16</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="5">
+            <name>Pathway</name>
+            <description>linePerthtoIOR</description>
+            <LineString id="4">
+                <altitudeMode>absolute</altitudeMode>
+                <coordinates>115.887162,-31.805231,22.16 64.5,0.0,35793600</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="7">
+            <name/>
+            <Point id="6">
+                <coordinates>64.5,0.0,35793600</coordinates>
+                <altitudeMode>absolute</altitudeMode>
+            </Point>
+        </Placemark>
+        <Placemark id="9">
+            <name/>
+            <Point id="8">
+                <coordinates>101.70977677998864,2.7457796968832535,26.444724317640066</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="11">
+            <name>Pathway</name>
+            <description>lineKLIAtoIOR</description>
+            <LineString id="10">
+                <altitudeMode>absolute</altitudeMode>
+                <coordinates>101.70977677998864,2.7457796968832535,26.444724317640066 64.5,0.0,35793600</coordinates>
+            </LineString>
+        </Placemark>
+    </Document>
+</kml>

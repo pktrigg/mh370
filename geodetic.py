@@ -53,7 +53,37 @@ import numpy as np
 import sys
 import os.path
 import pyproj
+from pyproj import Transformer
 
+###############################################################################
+def GeographictoECEF (longitude, latitude, elevation):
+	ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
+	lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')
+	x,y,z = pyproj.transform(lla, ecef, longitude, latitude, elevation, radians=False)
+	return x,y,z
+
+###############################################################################
+def ECEFtoGeographic (x,y,z):
+	ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
+	lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')
+	lon, lat, alt = pyproj.transform(ecef, lla, x, y, z, radians=False)
+	return lon, lat, alt
+
+###############################################################################
+def toCartesian (longitude, latitude, elevation):
+	from pyproj import Transformer
+	trans_GPS_to_XYZ = Transformer.from_crs(4979, 4978, always_xy=False)
+	x,y,z = trans_GPS_to_XYZ.transform(longitude, latitude, elevation)
+	return x,y,z
+
+###############################################################################
+def fromCartesian (x,y,z):
+	from pyproj import Transformer
+	trans_XYZ_to_GPS = Transformer.from_crs(4978,4979, always_xy=False)
+	longitude, latitude, elevation = trans_XYZ_to_GPS.transform(x,y,z)
+	return longitude, latitude, elevation
+
+###############################################################################
 def medfilt (x, k):
 	"""Apply a length-k median filter to a 1D array x.
 	Boundaries are extended by repeating endpoints.
@@ -71,6 +101,7 @@ def medfilt (x, k):
 		y[-j:,-(i+1)] = x[-1]
 	return np.median (y, axis=1)
 
+###############################################################################
 # from: http://mathforum.org/library/drmath/view/62034.html
 def calculateRangeBearingFromGridPosition(easting1, northing1, easting2, northing2):
 	"""given 2 east, north, pairs, compute the range and bearing"""
@@ -81,6 +112,7 @@ def calculateRangeBearingFromGridPosition(easting1, northing1, easting2, northin
 	bearing = 90 - (180/math.pi)*math.atan2(northing2-northing1, easting2-easting1)
 	return (math.sqrt((dx*dx)+(dy*dy)), bearing)
 
+###############################################################################
 # taken frm http://gis.stackexchange.com/questions/76077/how-to-create-points-based-on-the-distance-and-bearing-from-a-survey-point
 def calculateGridPositionFromRangeBearing(easting, northing, distance, bearing):
 	"""given an east, north, range and bearing, compute a new coordinate on the grid"""
@@ -416,6 +448,27 @@ def	writePRJ(filename, EPSGCode):
 # Test driver
 
 if __name__ == "__main__" :
+
+	#http://wikimapia.org/1647465/Inmarsat-Land-Earth-Station-Perth
+	# WGS84 
+	# 31°48'16"S   
+	# 115°52'57"E
+	# 22.16 this is the altitude of the ESA ground station, very close by (within 100m)
+	#GES (Perth) 
+	#115.88250000, -31.8044444, 22.16
+
+	# https://www.oc.nps.edu/oc2902w/coord/llhxyz.htm
+	# X : -2368393m
+	# Y : 4881307m
+	# Z : -3342034m
+
+	x,y,z = GeographictoECEF (115.88250000, -31.8044444, 22.16)
+	longitude, latitude, elevation = ECEFtoGeographic (x,y,z)
+
+	# pkpk 18/03/2023 the ECEF conversions work fine in both directions
+
+	# x,y,z = toCartesian (64.500, 0.00, 357881226)
+	# longitude, latitude, elevation = fromCartesian (x,y,z)
 
 	f = 1.0 / 298.257223563		# WGS84
 	a = 6378137.0 			# metres
