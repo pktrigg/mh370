@@ -56,6 +56,15 @@ import pyproj
 from pyproj import Transformer
 
 ###############################################################################
+def calculateECEFRange(x1, y1, z1, x2, y2, z2):
+	diffX = x2 - x1
+	diffY = y2 - y1
+	diffZ = z2 - z1
+	range = math.sqrt(diffX * diffX + diffY * diffY + diffZ * diffZ)
+	return range
+###############################################################################
+
+###############################################################################
 def GeographictoECEF (longitude, latitude, elevation):
 	ecef = pyproj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
 	lla = pyproj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')

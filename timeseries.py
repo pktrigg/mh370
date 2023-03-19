@@ -9,7 +9,6 @@ class cTimeSeries:
 	# tsRoll = cTimeSeries(attitude)
 	# print(tsRoll.getValueAt(6))'''
 
-
 ###############################################################################
 	def __init__(self, timeOrTimeValue, values=""):
 		'''the time series requires a 2d series of [[timestamp, value],[timestamp, value]].  It then converts this into a numpy array ready for fast interpolation'''

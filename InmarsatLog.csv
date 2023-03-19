@@ -1,5 +1,4 @@
 #Time,Channel,NameOcean,Region,GESID(octal),ChannelUnitID,ChannelType,SUType,BurstFrequencyOffset(Hz)BFO,BurstTimingOffset(microseconds)BTO
-
 7/03/2014,16:00:13.406,IOR-R1200-0-36D3,IOR,305,8,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,103,14820
 7/03/2014,16:00:13.906,IOR-P10500-0-3859,IOR,305,10,R-ChannelTX,0x15-Log-on/Log-offAcknowledge
 7/03/2014,16:00:17.430,IOR-R1200-0-36D3,IOR,305,8,R-ChannelRX,ElevenOctetUserData,103,14740
@@ -965,7 +964,7 @@
 7/03/2014,18:05:59.905,IOR-P10500-0-3859,IOR,305,10,R-ChannelTX,0x61-RequestforAcknowledge(RQA)UserData
 #18:25-Log-On Request initiated from the aircraft terminal. This is the end of the link lost period that began at sometime between 17:07:48 and 18:03:41.
 
-7/03/2014,18:25:27.421,IOR-R600-0-36E1,IOR,305,8,R-ChannelRX,0x10-Log-on,Request,(ISU)/Log-on,Flight,Information(SSU),142,17120
+7/03/2014,18:25:27.421,IOR-R600-0-36E1,IOR,305,8,R-ChannelRX,0x10-Log-on Request,(ISU)/Log-on Flight Information(SSU),142,17120
 7/03/2014,18:25:28.852,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,0x11-Log-onConfirm
 7/03/2014,18:25:29.572,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,0x40-P-/R-ChannelControl(ISU)
 7/03/2014,18:25:29.572,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,SubsequentSignallingUnit
@@ -998,48 +997,4 @@
 7/03/2014,18:39:52.907,IOR-P10500-0-386B,IOR,301,10,R-ChannelTX,0x20-AccessRequest/CallAnnouncementTelephone/Circuit-ModeData
 7/03/2014,18:39:52.907,IOR-P10500-0-386B,IOR,301,10,R-ChannelTX,0x33-C-ChannelAssignment(Regularity)
 7/03/2014,18:39:55.354,IOR-3730-21000,IOR,305,6,C-ChannelRX,0x30-CallProgress-Test88
-
-#84,C-Channel and 2 P-Channel messages moved into separate below table(see,appendix,1) to ease the reading of key events.C-Channel messages have no BTO values
-
-7/03/2014,18:40:56.354,IOR-3730-21000,IOR,305,6,C-ChannelRX,0x30-CallProgress-ChannelRelease90
-#19:41-Handshake Request with response
-7/03/2014,19:41:00.910,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-7/03/2014,19:41:02.906,IOR-R1200-0-36ED,IOR,305,4,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,111,11500
-#20:41-Handshake Request with response
-7/03/2014,20:41:02.907,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-7/03/2014,20:41:04.904,IOR-R1200-0-36ED,IOR,305,4,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,141,11740
-#21.41-Handshake Request with response
-7/03/2014,21:41:24.907,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-7/03/2014,21:41:26.905,IOR-R1200-0-36ED,IOR,305,4,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,168,12780
-#22:41-Handshake Request with response
-7/03/2014,22:41:19.907,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-7/03/2014,22:41:21.906,IOR-R1200-0-36ED,IOR,305,4,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,204,14540
-#23:13-Ground Initiated to Air Telephony Call-Zero Duration (Not Answered)
-7/03/2014,23:13:58.407,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x20-Access,Request/Call,Announcement,Telephone/Circuit-Mode,Data
-7/03/2014,23:13:58.407,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x33-C-ChannelAssignment(Regularity)
-7/03/2014,23:14:00.904,IOR-3737-21000,IOR,305,6,C-ChannelRX,0x30-Call,Progress-Test,216
-
-#48,C-Channel and 1 P-Channel messages moved into separate below table (see,appendix,2) to ease the reading of key events. C-Channel messages have no BTO values
-#7/03/2014,23:15:02.032,IOR-3737-21000,IOR,305,6,C-ChannelRX,0x30-Call,Progress-Channel,Release,219
-##00:10:58-Handshake Request withresponse
-#8/03/2014,00:10:58.000,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-#8/03/2014,00:10:59.928,IOR-R1200-0-36ED,IOR,305,4,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,252,18040
-##00:19:29-Log-On Request (reported as a Partial Handshake) initiated from the aircraft terminal
-#8/03/2014,00:19:29.416,IOR-R600-0-36F8,IOR,305,10,R-ChannelRX,0x10-Log-on,Request,(ISU)/Log-on,Flight,Information
-#(SSU),182,23000
-#8/03/2014,00:19:31.572,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,0x11-Log-onConfirm
-#8/03/2014,00:19:32.212,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,0x40-P-/R-ChannelControl,(ISU)
-#8/03/2014,00:19:32.212,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,SubsequentSignallingUnit
-#8/03/2014,00:19:32.852,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,0x41-T-ChannelControl(ISU)
-#8/03/2014,00:19:32.852,IOR-P600-0-36FC,IOR,305,10,R-ChannelTX,SubsequentSignallingUnit
-##00:19:37-Note that the following R-Channel burst at 00:19:37.443 is the last transmission received from the aircraft terminal
-#8/03/2014,00:19:37.443,IOR-R1200-0-36F6,IOR,305,10,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,-2,49660
-#8/03/2014,00:19:38.407,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x15-Log-on/Log-offAcknowledge
-##01:15:56,–,Handshake,Request-No,Response,from,Aircraft,Terminal
-#8/03/2014 01:15:56.000,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-##01:16:06-Handshake Request-No Response from Aircraft Terminal
-#8/03/2014,01:16:06.000,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-##01:16:15-Handshake Request-No Response from Aircraft Terminal
-#8/03/2014,01:16:15.000,IOR-P10500-0-386B,IOR,305,10,R-ChannelTX,0x14-LogControl-Log-onInterrogation
-
 

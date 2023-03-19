@@ -6,7 +6,7 @@
 import sys
 import os
 import math
-# import numpy as np
+import numpy as np
 import os.path
 import time
 from datetime import datetime
@@ -47,13 +47,22 @@ def process(args):
 	flightpath.append(Ccoordinate(timestamp, 101.698056, 2.743333, 21.0, "Final ACARS Transmission"))
 
 	# read the inmarsat log file....
-	print ("File to process: %d" % (len(args.inputfile)))
+	print ("File to process: %d" % (len(args.inputfile)))	
+	inmarsatlog = Cinmarsatlogreader(args.inputfile)
 
-	
-	inmarsat = Cinmarsat(args.inputfile)
-
+	#create an instance of the engine.  this holds all data.
 	engine = CMH370Engine()
 
+	for rec in inmarsatlog.aircraftlogrecords:
+		r = engine.calculateATO_BTORangemetres(rec.timestamp, rec.bto)
+
+	#lets use the KLIA log record to demonstrate the maths for spherical intersection works...
+	calcintersectionofspheres(engine.IORPosition, IORRange)
+
+
+
+
+	#write out the results...
 	kml = simplekml.Kml()
 	kml.AltitudeMode = 'absolute'
 
@@ -73,7 +82,37 @@ def process(args):
 
 	kml.save("pk1.kml")
 
+
+
+
 	return
+
+###############################################################################
+# https://archive.lib.msu.edu/crcmath/math/math/s/s563.htm
+def calcintersectionofspheres(IORPosition, IORRange):
+
+	# d = ecef height of satellite
+	d = IORPosition.z
+
+	# r = range aircraft to satellite
+
+	# R = radius of earth at location directly below the IOR satellite
+	x,y,z = geodetic.GeographictoECEF(IORPosition.longitude, IORPosition.latitude, 0.0)
+	R = z
+	rangeFromECEFnadir = (1/(2*d) * math.sqrt((-d+r-R) * (-d-r+R) * (-d+r+R) * (d+r+R)))
+
+###############################################################################
+def  position(a,r,u,v):
+	return a + r*np.array([np.cos(u)*np.sin(v),np.sin(u)*np.sin(v),np.cos(v)])
+
+###############################################################################
+def f(args):
+	# u1,v1,u2,v2,u3,v3,_,_,_ = args
+	u1,v1,u2,v2 = args
+	pos1 = position(a1,r1,u1,v1)
+	pos2 = position(a2,r2,u2,v2)
+	# pos3 = position(a3,r3,u3,v3)
+	return np.array([pos1 - pos2, pos1 - pos3, pos2 - pos3]).flatten()
 ###############################################################################
 def	exportxyz(records, inputfilename):
 
@@ -110,6 +149,36 @@ def from_timestamp(unixtime):
 # 	return d
 
 ###############################################################################
+def getrangeSatelliteToPerth(timestamp, satellitepositions, earthposition):
+
+	# given a timestamp compute the satellite position at that time
+	ts 		= []
+	long 	= []
+	lat 	= []
+	elev 	= []
+	for rec in satellitepositions:
+		ts.append(rec.timestamp)
+		long.append(rec.longitude)
+		lat.append(rec.latitude)
+		elev.append(rec.elevation)
+
+	tslongitude = timeseries.cTimeSeries(ts, long)
+	tslatitude = timeseries.cTimeSeries(ts, lat)
+	tselev = timeseries.cTimeSeries(ts, elev)
+
+	latitudeattimestamp = (tslongitude.getValueAt(timestamp))
+	longitudeattimestamp = (tslatitude.getValueAt(timestamp))
+	elevationattimestamp = (tselev.getValueAt(timestamp))
+
+	# we now know where the satellite is, so we can now compute the range to the earth satation
+	range1, brg1, brg2 = geodetic.calculateRangeBearingFromGeographicals(longitudeattimestamp, latitudeattimestamp, earthposition.longitude, earthposition.latitude)
+	x1,y1,z1 = geodetic.GeographictoECEF(earthposition.longitude, earthposition.latitude, earthposition.elevation)
+	x2,y2,z2 = geodetic.GeographictoECEF(longitudeattimestamp, latitudeattimestamp, elevationattimestamp)
+	range = geodetic.calculateECEFRange(x1, y1, z1, x2, y2, z2)
+
+	return range
+
+###############################################################################
 class Ccoordinate:
 	#class to hold a timestamp coordinate.
 ###############################################################################
@@ -119,6 +188,7 @@ class Ccoordinate:
 		self.latitude	= latitude
 		self.elevation 	= elevation
 		self.name 		= name
+		self.x,self.y,self.z	= geodetic.GeographictoECEF(longitude, latitude, elevation)
 
 ###############################################################################
 class Cinmarsatlogrecord:
@@ -136,10 +206,8 @@ class Cinmarsatlogrecord:
 		self.bfo 			= bfo
 		self.bto 			= bto
 
-		self.speedlightmetrespersec		= 299792458 
-
 ###############################################################################
-class Cinmarsat:
+class Cinmarsatlogreader:
 	'''# a class to read and parse the inmarsat log file'''
 	# Time,Channel,NameOcean,Region,GESID(octal),ChannelUnitID,ChannelType,SUType,BurstFrequencyOffset(Hz)BFO,BurstTimingOffset(microseconds)BTO
 	# 7/03/2014,16:00:13.406,IOR-R1200-0-36D3,IOR,305,8,R-ChannelRX,0x15-Log-on/Log-offAcknowledge,103,14820
@@ -163,15 +231,19 @@ class Cinmarsat:
 					continue
 				recdate  = datetime.strptime(words[0] + " " + words[1], '%d/%m/%Y %H:%M:%S.%f') 
 				timestamp = to_timestamp(recdate)
-				rec = Cinmarsatlogrecord(recdate, words[2], words[3], words[4], words[5], words[6], words[7], words[8], words[9])
+				bto = float(words[9]) / 1000000 # microseconds to seconds
+				rec = Cinmarsatlogrecord(timestamp, words[2], words[3], words[4], words[5], words[6], words[7], words[8], bto)
 				self.aircraftlogrecords.append(rec)
 
-
+		# the first record represents the aircraft on the ground in KLIA...
+		# self.kliarange
 ###############################################################################
 class CMH370Engine:
 
 ###############################################################################
 	def __init__(self):
+		self.speedlightmetrespersec		= 299792458 
+
 		#http://wikimapia.org/1647465/Inmarsat-Land-Earth-Station-Perth
 		# WGS84 
 		# 31°48'16"S   
@@ -218,8 +290,25 @@ class CMH370Engine:
 				recdate  = datetime.strptime(words[0] + " " + words[1], '%d/%m/%Y %H:%M:%S') 
 				timestamp = to_timestamp(recdate)
 				long, lat, elev = geodetic.ECEFtoGeographic(float(words[2]), float(words[3]), float(words[4]))
-				rec = Ccoordinate(recdate, long, lat, elev)
+				rec = Ccoordinate(timestamp, long, lat, elev)
 				self.satellitepositions.append(rec)
+
+
+	###############################################################################
+	def calculateATO_BTORangemetres(self, timestamp, BTO):
+
+		# we need to convert the BTO to a range in metres...
+		# file:///C:/Users/pkdesktop/Guardian%20Geomatics/Technical%20-%20Documents/MH370/the-search-for-mh370.pdf
+		# Seventeen measurements were taken during this 30 minute period, and these were
+		# processed to estimate the fixed timing bias. The mean bias of −495,679 μs was then
+		# used to predict the path length from the measured data
+
+		btobias = 495679 / 1000000 # microseconds to seconds conversion pkpkpk
+		bto = float(BTO)
+		rangeSatelliteToPerth = getrangeSatelliteToPerth(timestamp, self.satellitepositions, self.groundstation)
+
+		ATOrangeSatelliteToAircraft = ((self.speedlightmetrespersec * (bto + btobias))/ 2) - rangeSatelliteToPerth
+		return ATOrangeSatelliteToAircraft
 
 ###############################################################################
 if __name__ == "__main__":
